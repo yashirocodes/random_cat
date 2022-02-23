@@ -26,9 +26,11 @@
               <label class="col-form-label ancho"> Filtro </label>
             </div>
             <div class="col-auto">
-              <select class="form-select" @change="catFilter($event)">
+              <select class="form-select" v-model="catFilter">
                 <option value="">Selecciona una opción</option>
+
                 <option v-for="(filtro, index) in filtros" :key="index" :value="filtro" v-text="filtro"></option>
+                
               </select>
             </div>
             <div class="col-auto">
@@ -43,13 +45,13 @@
               <label class="col-form-label ancho"> Color </label>
             </div>
             <div class="col-auto">
-              <select class="form-select" @change="catColor($event)">
+              <select class="form-select" v-model="catColor">
                 <option value="">Selecciona una opción</option>
-                <option v-for="(c, index) in colores" :key="index" :value="c.color" v-text="c.texto"></option>
+                <option v-for="(color, index) in colores" :key="index" :value="color" v-text="color"></option>
               </select>
             </div>
             <div class="col-auto">
-              <div class="colorize" :style="{backgroundColor: color}"></div>
+              <div class="colorize" :style="{backgroundColor: catColor}"></div>
             </div>
             <div class="col-auto">
               <span class="form-text">
@@ -79,7 +81,7 @@
       <h2 class="text-center">Este es tu gato 🙀</h2>
       <div class="d-flex justify-content-center mb-2">
         <div class="catContainer">
-          <img :src="imagen">
+          <img :src="catImg">
       </div>
       </div>
     </div>
@@ -94,20 +96,14 @@ export default {
   name: "App",
   data() {
     return {
-      imagen: '',
+      catImg: '',
       catTitulo:"",
       catTamanio:"",
       titulo: "Random Gif Cat",
-      filtro: "",
-      color: "",
+      catFilter: "",
+      catColor: "",
       filtros: ['blur','mono','sepia','negative','paint','pixel'],
-      colores:[
-        {color: 'green', texto: 'Verde'},
-        {color: 'blue', texto: 'Azul'},
-        {color: 'red', texto: 'Rojo'},
-        {color: 'white', texto: 'Blanco'},
-        {color: 'black', texto: 'Negro'},
-        ]
+      colores:['Red', 'Blue', 'Green', 'Yellow', 'Purple']
 
     };
   },
@@ -117,19 +113,14 @@ export default {
 
   methods: {
     obtenerGatito(){
-      this.imagen = this.urlGatito
+     fetch(`https://cataas.com/cat/gif//says/${this.catTitulo}?size=${this.catTamanio}&color=${this.catColor}&filter=${this.catFilter}`)
+      .then((res) => res.blob())
+      .then((blob) => {
+        let catUrl = URL.createObjectURL(blob)
+        this.catImg = catUrl
+      }) 
     },
-    catFilter(event){
-      this.filtro = event.target.value
-    },
-    catColor(event){
-      this.color = event.target.value
-    }
-  },
-  computed: {
-    urlGatito(){
-      return `https://cataas.com/cat/gif/says/${this.catTitulo}?filter=${this.filtro}&color=${this.color}&size=${this.catTamanio}`
-    }
+    
   },
 };
 </script>
